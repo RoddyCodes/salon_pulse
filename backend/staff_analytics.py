@@ -196,9 +196,6 @@ def get_top_services_by_technician(technician_id: int, limit: int = 5) -> List[D
         .all()
     )
 
-    # Get service names
-    from backend.models import Service
-
     top_services = []
     for row in results:
         service = db.session.get(Service, row.service_id)
