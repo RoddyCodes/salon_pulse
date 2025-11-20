@@ -1,9 +1,11 @@
 """Analyze salon business data and generate reports."""
 
+import os
 import sys
 from datetime import datetime, timedelta
 
-sys.path.insert(0, "..")
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from sqlalchemy import func  # noqa: E402
 

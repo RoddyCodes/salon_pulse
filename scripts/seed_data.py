@@ -1,10 +1,12 @@
 """Generate realistic seed data for the salon application."""
 
+import os
 import random
 import sys
 from datetime import datetime, timedelta
 
-sys.path.insert(0, "..")
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.models import Appointment, Customer, Service, Technician, app, db  # noqa: E402
 

@@ -1,8 +1,10 @@
 """Generate customer lifetime value reports."""
 
+import os
 import sys
 
-sys.path.insert(0, "..")
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.customer_analytics import calculate_customer_ltv, get_segment_summary  # noqa: E402
 
