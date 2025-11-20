@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- SUMMARY CARDS -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h3 class="text-primary">{{ total_customers }}</h3>
+                <p class="mb-0 text-muted">Total Customers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h3 class="text-success">${{ "%.2f"|format(avg_ltv) }}</h3>
+                <p class="mb-0 text-muted">Avg Lifetime Value</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h3 class="text-warning">{{ vip_count }}</h3>
+                <p class="mb-0 text-muted">VIP Customers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h3 class="text-danger">{{ at_risk_count }}</h3>
+                <p class="mb-0 text-muted">At-Risk Customers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEGMENT VISUALIZATIONS -->
+<div class="row mb-4">
+    <!-- Segment Distribution -->
+    <div class="col-md-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">👥 Customer Segments</h5>
+            </div>
+            <div class="card-body">
+                <div style="max-height: 300px; display: flex; justify-content: center;">
+                    <canvas id="segmentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue by Segment -->
+    <div class="col-md-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">💰 Revenue by Segment</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueSegmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEGMENT BREAKDOWN TABLE -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📊 Segment Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Segment</th>
+                                <th>Customer Count</th>
+                                <th>Total Revenue</th>
+                                <th>Avg Spend per Customer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for segment in ['VIP', 'Champion', 'Loyal', 'Promising', 'At-Risk', 'Needs Attention', 'Lost'] %}
+                                {% if segment in segment_summary %}
+                                <tr>
+                                    <td>
+                                        <span class="badge
+                                            {% if segment == 'VIP' %}bg-warning
+                                            {% elif segment == 'Champion' %}bg-success
+                                            {% elif segment == 'Loyal' %}bg-primary
+                                            {% elif segment == 'Promising' %}bg-info
+                                            {% elif segment == 'At-Risk' %}bg-warning
+                                            {% elif segment == 'Lost' %}bg-danger
+                                            {% else %}bg-secondary
+                                            {% endif %}">
+                                            {{ segment }}
+                                        </span>
+                                    </td>
+                                    <td>{{ segment_summary[segment]['count'] }}</td>
+                                    <td class="text-success fw-bold">${{ "%.2f"|format(segment_summary[segment]['total_revenue']) }}</td>
+                                    <td>${{ "%.2f"|format(segment_summary[segment]['avg_spend']) }}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CUSTOMER DETAIL TABLE -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">💎 Customer Lifetime Value Rankings</h5>
+                <small>Sorted by Total Spend</small>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Segment</th>
+                                <th>Visits</th>
+                                <th>Total Spend</th>
+                                <th>Avg Transaction</th>
+                                <th>Days Since Visit</th>
+                                <th>Visit Frequency</th>
+                                <th>Predicted 12mo LTV</th>
+                                <th>Favorite Services</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for customer in customers %}
+                            <tr>
+                                <td class="fw-bold">{{ loop.index }}</td>
+                                <td>
+                                    <strong>{{ customer.name }}</strong>
+                                    <br><small class="text-muted">{{ customer.phone }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {% if customer.segment == 'VIP' %}bg-warning
+                                        {% elif customer.segment == 'Champion' %}bg-success
+                                        {% elif customer.segment == 'Loyal' %}bg-primary
+                                        {% elif customer.segment == 'Promising' %}bg-info
+                                        {% elif customer.segment == 'At-Risk' %}bg-warning
+                                        {% elif customer.segment == 'Lost' %}bg-danger
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                        {{ customer.segment }}
+                                    </span>
+                                </td>
+                                <td>{{ customer.total_visits }}</td>
+                                <td class="fw-bold text-success">${{ "%.2f"|format(customer.total_spend) }}</td>
+                                <td>${{ "%.2f"|format(customer.avg_transaction_value) }}</td>
+                                <td>
+                                    <span class="
+                                        {% if customer.days_since_last_visit > 60 %}text-danger
+                                        {% elif customer.days_since_last_visit > 30 %}text-warning
+                                        {% else %}text-success
+                                        {% endif %}">
+                                        {{ customer.days_since_last_visit }} days
+                                    </span>
+                                </td>
+                                <td>
+                                    Every {{ customer.avg_days_between_visits }} days
+                                    {% if customer.visit_trend == 'Increasing' %}
+                                        <span class="text-success">↑</span>
+                                    {% elif customer.visit_trend == 'Decreasing' %}
+                                        <span class="text-danger">↓</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-primary fw-bold">${{ "%.2f"|format(customer.predicted_ltv_12mo) }}</td>
+                                <td>
+                                    <small>
+                                        {% for service in customer.favorite_services %}
+                                            {{ service }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHART.JS LOGIC -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Parse data from Python
+    const segmentLabels = {{ segment_labels | tojson | safe }};
+    const segmentCounts = {{ segment_counts | tojson | safe }};
+    const segmentRevenue = {{ segment_revenue | tojson | safe }};
+
+    // Define colors for segments
+    const segmentColors = {
+        'VIP': '#ffc107',
+        'Champion': '#28a745',
+        'Loyal': '#0d6efd',
+        'Promising': '#17a2b8',
+        'At-Risk': '#fd7e14',
+        'Needs Attention': '#6c757d',
+        'Lost': '#dc3545'
+    };
+
+    const backgroundColors = segmentLabels.map(label => segmentColors[label] || '#6c757d');
+
+    // 1. SEGMENT DISTRIBUTION CHART (Doughnut)
+    new Chart(document.getElementById('segmentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: segmentLabels,
+            datasets: [{
+                data: segmentCounts,
+                backgroundColor: backgroundColors
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+
+    // 2. REVENUE BY SEGMENT CHART (Bar)
+    new Chart(document.getElementById('revenueSegmentChart'), {
+        type: 'bar',
+        data: {
+            labels: segmentLabels,
+            datasets: [{
+                label: 'Total Revenue ($)',
+                data: segmentRevenue,
+                backgroundColor: backgroundColors
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

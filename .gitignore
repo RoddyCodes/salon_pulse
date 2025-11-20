@@ -1,5 +1,40 @@
+# Virtual environment
 venv/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Database
 *.db
+instance/
+
+# macOS
 .DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+
+# CI/CD artifacts
+bandit-report.json
+safety-report.json
+*.tar.gz
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
