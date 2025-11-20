@@ -10,13 +10,16 @@ A comprehensive business intelligence and management system for nail salons, bui
 ## 🎯 Features
 
 ### Dashboard & Analytics
+
 - **Staff Performance Tracking**: Revenue, tips, and job counts per technician
 - **Customer Retention Alerts**: Identify at-risk customers (30+ days inactive)
 - **Revenue Visualization**: Interactive charts with daily/monthly trends
 - **Service Analysis**: Track which services drive revenue
 
 ### Customer Lifetime Value (LTV) Analytics
+
 - **Smart Segmentation**: Automatically categorizes customers into:
+
   - 💎 **VIP**: High-value customers with recent activity
   - 🏆 **Champion**: Frequent, loyal customers
   - 🤝 **Loyal**: Consistent repeat customers
@@ -34,6 +37,7 @@ A comprehensive business intelligence and management system for nail salons, bui
   - Tip percentages
 
 ### Data Management
+
 - Simple appointment entry form
 - Auto-customer creation by phone number
 - Realistic test data generator (90 days of history)
@@ -111,21 +115,27 @@ Navigate through these pages:
 ### CLI Tools
 
 **Customer Analytics Report:**
+
 ```bash
 python scripts/customer_report.py
 ```
+
 Shows segment breakdown and top customers by LTV.
 
 **Business Intelligence Report:**
+
 ```bash
 python scripts/analyze.py
 ```
+
 Terminal-based dashboard with staff performance.
 
 **Reset Database:**
+
 ```bash
 python scripts/seed_data.py
 ```
+
 Drops all data and generates fresh practice dataset.
 
 ## 📁 Project Structure
@@ -208,6 +218,7 @@ make test    # Run tests
 ## 📈 Customer Segmentation Logic
 
 ### Segment Thresholds
+
 - **High Spend**: $300+ lifetime value
 - **Frequent Visits**: 5+ appointments
 - **Regular Frequency**: Every 28 days or less
@@ -216,15 +227,15 @@ make test    # Run tests
 
 ### Segment Definitions
 
-| Segment | Criteria |
-|---------|----------|
-| VIP | High spend + recent activity |
-| Champion | Frequent visits + loyal + recent |
-| Loyal | Consistent visits over time |
-| Promising | New (1-3 visits) but engaged |
-| At-Risk | Was good but overdue |
-| Needs Attention | Infrequent or low engagement |
-| Lost | No visits in 60+ days |
+| Segment         | Criteria                         |
+| --------------- | -------------------------------- |
+| VIP             | High spend + recent activity     |
+| Champion        | Frequent visits + loyal + recent |
+| Loyal           | Consistent visits over time      |
+| Promising       | New (1-3 visits) but engaged     |
+| At-Risk         | Was good but overdue             |
+| Needs Attention | Infrequent or low engagement     |
+| Lost            | No visits in 60+ days            |
 
 ## 🔮 Future Enhancements
 

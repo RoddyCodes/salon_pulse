@@ -28,41 +28,27 @@ Version Control: Git/GitHub
 
 3. File Architecture
 
-**Backend (Flask Application):**
+models.py: Contains the SQLAlchemy DB models (Technician, Service, Customer, Appointment).
 
-backend/models.py: Database models and app configuration (Technician, Service, Customer, Appointment).
+app.py: The main Flask application. Handles routing, data aggregation, and logic.
 
-backend/routes.py: All Flask routes and request handling logic.
+customer_analytics.py: Customer Lifetime Value (LTV) analysis module with segmentation logic.
 
-backend/customer_analytics.py: Customer Lifetime Value (LTV) analysis module with segmentation logic.
+seed_data.py: A utility script to drop the database and repopulate it with dummy test data.
 
-backend/**init**.py: Package initialization, exports main objects.
+analyze.py: A CLI script for quick reporting (legacy, mostly replaced by the web dashboard).
 
-**Scripts (Utility Tools):**
+templates/:
 
-scripts/seed_data.py: Drops database and generates 90 days of realistic test data.
+base.html: Global layout (Navbar, Bootstrap CDN, Flash messages).
 
-scripts/analyze.py: CLI reporting tool for technician performance and retention alerts.
+dashboard.html: Main view showing Staff Performance table and Retention Alerts.
 
-scripts/customer_report.py: CLI tool for customer LTV analysis.
+add.html: Form to manually input new appointments.
 
-**Frontend (Templates & Static):**
+appointments.html: Analytics view with Chart.js visualizations and filtering options.
 
-templates/base.html: Global layout (Navbar, Bootstrap CDN, Flash messages).
-
-templates/dashboard.html: Main view showing Staff Performance table and Retention Alerts.
-
-templates/add.html: Form to manually input new appointments.
-
-templates/appointments.html: Analytics view with Chart.js visualizations and filtering options.
-
-templates/customers.html: Customer Lifetime Value dashboard with segmentation and rankings.
-
-static/: CSS, JavaScript, and image files (currently uses CDN for Bootstrap/Chart.js).
-
-**Entry Point:**
-
-run.py: Main application launcher (replaces app.py).
+customers.html: Customer Lifetime Value dashboard with segmentation and rankings.
 
 4. Database Schema (Mental Model)
 
@@ -132,11 +118,7 @@ Favorite services and preferred technician
 
 7. Coding Conventions & "Gotchas"
 
-Import Structure: All backend imports use backend. prefix (e.g., from backend.models import app).
-
-Template/Static Paths: Flask app configured with template_folder='../templates', static_folder='../static'.
-
-Chart.js Integration: When passing data to Chart.js in templates, we calculate the lists (labels/values) in backend/routes.py first. We MUST use | tojson | safe in the Jinja template to prevent JavaScript syntax errors.
+Chart.js Integration: When passing data to Chart.js in templates/appointments.html, we calculate the lists (labels/values) in app.py first. We MUST use | tojson | safe in the Jinja template to prevent JavaScript syntax errors.
 
 Date Handling: We use Python's datetime object. For charts, we format dates as strings (YYYY-MM-DD) in the backend before passing them to the frontend.
 

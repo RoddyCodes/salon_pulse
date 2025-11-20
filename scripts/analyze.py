@@ -1,12 +1,13 @@
+"""Analyze salon business data and generate reports."""
+
 import sys
+from datetime import datetime, timedelta
 
 sys.path.insert(0, "..")
 
-from datetime import datetime, timedelta
+from sqlalchemy import func  # noqa: E402
 
-from sqlalchemy import func
-
-from backend.models import Appointment, Customer, Technician, app, db
+from backend.models import Appointment, Customer, Technician, app, db  # noqa: E402
 
 
 def run_reports():
@@ -58,9 +59,9 @@ def run_reports():
 
             if last_appt and last_appt.date_time < thirty_days_ago:
                 days_missed = (datetime.now() - last_appt.date_time).days
-                print(
-                    f"  • {customer.first_name} {customer.phone} (Last seen: {days_missed} days ago)"
-                )
+                name = customer.first_name
+                phone = customer.phone
+                print(f"  • {name} {phone} " f"(Last seen: {days_missed} days ago)")
                 at_risk_count += 1
 
         if at_risk_count == 0:

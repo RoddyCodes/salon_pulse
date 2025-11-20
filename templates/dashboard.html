@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="row mb-4">
   <div class="col">
     <h1 class="display-4">💅 Salon Pulse Dashboard</h1>
@@ -36,7 +34,10 @@
                 <td>${{ "%.2f"|format(tech.total_revenue or 0) }}</td>
                 <td>${{ "%.2f"|format(tech.total_tips or 0) }}</td>
                 <td class="text-success">
-                  <strong>${{ "%.2f"|format((tech.total_revenue or 0) + (tech.total_tips or 0)) }}</strong>
+                  <strong
+                    >${{ "%.2f"|format((tech.total_revenue or 0) +
+                    (tech.total_tips or 0)) }}</strong
+                  >
                 </td>
               </tr>
               {% endfor %}
@@ -44,7 +45,9 @@
           </table>
         </div>
         {% else %}
-        <p class="text-muted mb-0">No appointment data yet. Start by adding your first appointment!</p>
+        <p class="text-muted mb-0">
+          No appointment data yet. Start by adding your first appointment!
+        </p>
         {% endif %}
       </div>
     </div>
@@ -82,7 +85,9 @@
           </table>
         </div>
         {% else %}
-        <p class="text-success mb-0">✅ Great job! All customers are engaged.</p>
+        <p class="text-success mb-0">
+          ✅ Great job! All customers are engaged.
+        </p>
         {% endif %}
       </div>
     </div>

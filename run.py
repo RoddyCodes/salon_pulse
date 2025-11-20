@@ -11,11 +11,10 @@ import sys
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import routes to register them with the app
-from backend import routes
+import backend.routes  # noqa: E402, F401
 
-# Import the Flask app
-from backend.models import app
+# Import the Flask app and routes to register them
+from backend.models import app  # noqa: E402
 
 if __name__ == "__main__":
     print("\n" + "=" * 50)

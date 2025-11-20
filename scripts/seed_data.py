@@ -1,11 +1,12 @@
+"""Generate realistic seed data for the salon application."""
+
+import random
 import sys
+from datetime import datetime, timedelta
 
 sys.path.insert(0, "..")
 
-import random
-from datetime import datetime, timedelta
-
-from backend.models import Appointment, Customer, Service, Technician, app, db
+from backend.models import Appointment, Customer, Service, Technician, app, db  # noqa: E402
 
 
 def add_sample_data():
@@ -236,15 +237,13 @@ def add_sample_data():
 
         # Print summary statistics
         print("\n📊 Dataset Summary:")
-        print(
-            f"   • Date Range: {start_date.strftime('%Y-%m-%d')} to {datetime.now().strftime('%Y-%m-%d')}"
-        )
-        print(
-            f"   • Total Revenue: ${sum(a.price_charged + a.tip_amount for a in appointments):,.2f}"
-        )
-        print(
-            f"   • Average Transaction: ${sum(a.price_charged + a.tip_amount for a in appointments) / len(appointments):.2f}"
-        )
+        start_str = start_date.strftime("%Y-%m-%d")
+        now_str = datetime.now().strftime("%Y-%m-%d")
+        print(f"   • Date Range: {start_str} to {now_str}")
+        total_revenue = sum(a.price_charged + a.tip_amount for a in appointments)
+        print(f"   • Total Revenue: ${total_revenue:,.2f}")
+        avg_transaction = total_revenue / len(appointments)
+        print(f"   • Average Transaction: ${avg_transaction:.2f}")
         print(f"   • Regular Customers: {len(regular_customers)}")
         print(f"   • At-Risk Customers: {len(at_risk_customers)}")
         print("\n✅ Practice dataset generated successfully!")

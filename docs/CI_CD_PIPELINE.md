@@ -45,18 +45,21 @@ This project uses **GitHub Actions** for continuous integration and deployment, 
 **Purpose**: Ensure code follows Python best practices and style guidelines
 
 **Tools**:
+
 - **Black**: Code formatter (PEP 8 compliant)
 - **isort**: Import statement organizer
 - **Flake8**: Style guide enforcement
 - **Pylint**: Static code analysis
 
 **Pass Criteria**:
+
 - ✅ Code formatted with Black
 - ✅ Imports sorted correctly
 - ✅ No Flake8 violations
 - ⚠️ Pylint warnings won't fail build
 
 **Local Testing**:
+
 ```bash
 # Format code
 black backend/ scripts/ run.py
@@ -76,10 +79,12 @@ pylint backend/ scripts/ run.py
 **Purpose**: Identify security vulnerabilities in code and dependencies
 
 **Tools**:
+
 - **Bandit**: Scans Python code for security issues
 - **Safety**: Checks dependencies for known vulnerabilities
 
 **Checks**:
+
 - SQL injection vulnerabilities
 - Hardcoded passwords/secrets
 - Insecure random number generation
@@ -88,6 +93,7 @@ pylint backend/ scripts/ run.py
 **Artifacts**: Security reports uploaded for review
 
 **Local Testing**:
+
 ```bash
 # Scan code for security issues
 bandit -r backend/ scripts/ run.py
@@ -101,21 +107,25 @@ safety check
 **Purpose**: Validate functionality across multiple Python versions
 
 **Test Matrix**:
+
 - Python 3.11
 - Python 3.12
 - Python 3.13 (primary)
 
 **Coverage Requirements**:
+
 - Unit tests for all backend modules
 - Integration tests for Flask routes
 - Minimum 70% code coverage (recommended)
 
 **Test Types**:
+
 - **Unit Tests**: `test_models.py`, `test_analytics.py`
 - **Integration Tests**: `test_routes.py`
 - **Fixtures**: Reusable test data in `conftest.py`
 
 **Local Testing**:
+
 ```bash
 # Run all tests
 pytest tests/ -v
@@ -138,6 +148,7 @@ pytest -m integration
 **Purpose**: Ensure application can be built and started successfully
 
 **Steps**:
+
 1. Install dependencies
 2. Initialize database schema
 3. Test application startup (10s timeout)
@@ -148,6 +159,7 @@ pytest -m integration
 **Artifact**: `salon-pulse-build.tar.gz` (retained for 30 days)
 
 **Local Testing**:
+
 ```bash
 # Test full build process
 python -m backend.models
@@ -163,6 +175,7 @@ python scripts/analyze.py
 **Current Status**: Placeholder for deployment logic
 
 **Supported Platforms**:
+
 - Heroku
 - AWS (EC2, ECS, Lambda)
 - DigitalOcean
@@ -188,6 +201,7 @@ AWS_SECRET_ACCESS_KEY: <your-aws-secret>
 ### Environment Variables
 
 Set in workflow file or repository settings:
+
 - `PYTHON_VERSION`: Python version (currently 3.13)
 - `FLASK_ENV`: production|development
 - `DATABASE_URL`: Production database connection string
@@ -232,33 +246,39 @@ ptw tests/ -- --cov=backend
 ### Deploying to Heroku
 
 1. **Create Heroku app**:
+
 ```bash
 heroku create salon-pulse
 ```
 
 2. **Add PostgreSQL** (recommended for production):
+
 ```bash
 heroku addons:create heroku-postgresql:mini
 ```
 
 3. **Set environment variables**:
+
 ```bash
 heroku config:set FLASK_ENV=production
 heroku config:set SECRET_KEY=<your-secret-key>
 ```
 
 4. **Create Procfile**:
+
 ```
 web: gunicorn run:app
 ```
 
 5. **Add to requirements.txt**:
+
 ```
 gunicorn==21.2.0
 psycopg2-binary==2.9.9  # For PostgreSQL
 ```
 
 6. **Deploy**:
+
 ```bash
 git push heroku main
 ```
@@ -268,18 +288,21 @@ git push heroku main
 1. **Launch EC2 instance** (Ubuntu 22.04 LTS)
 2. **SSH into instance**
 3. **Install dependencies**:
+
 ```bash
 sudo apt update
 sudo apt install python3-pip nginx
 ```
 
 4. **Clone repository**:
+
 ```bash
 git clone <your-repo-url>
 cd salon_pulse
 ```
 
 5. **Setup application**:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -317,6 +340,7 @@ sentry_sdk.init(
 ### Pipeline Failures
 
 **Black formatting fails**:
+
 ```bash
 # Auto-fix locally
 black backend/ scripts/ run.py
@@ -325,12 +349,14 @@ git commit -m "Format code with Black"
 ```
 
 **Tests fail**:
+
 ```bash
 # Run locally to debug
 pytest tests/ -v --tb=short
 ```
 
 **Import errors in tests**:
+
 ```bash
 # Ensure you're in project root
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
@@ -340,6 +366,7 @@ pytest tests/
 ### Local Development Issues
 
 **Pre-commit hook failures**:
+
 ```bash
 # Run hooks manually
 pre-commit run --all-files

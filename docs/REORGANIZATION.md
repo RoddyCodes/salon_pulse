@@ -43,21 +43,25 @@ The following files in the root directory are now obsolete and can be safely del
 ### How to Run After Reorganization
 
 **Start the application:**
+
 ```bash
 python run.py
 ```
 
 **Generate test data:**
+
 ```bash
 python scripts/seed_data.py
 ```
 
 **Run customer analytics:**
+
 ```bash
 python scripts/customer_report.py
 ```
 
 **Run business intelligence report:**
+
 ```bash
 python scripts/analyze.py
 ```

@@ -6,11 +6,9 @@ to help identify VIP customers, at-risk customers, and growth opportunities.
 """
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from sqlalchemy import func
-
-from backend.models import Appointment, Customer, app, db
+from backend.models import Appointment, Customer, app
 
 
 def calculate_customer_ltv():
@@ -248,8 +246,11 @@ if __name__ == "__main__":
     for segment in segment_order:
         if segment in segment_summary:
             stats = segment_summary[segment]
+            revenue = stats["total_revenue"]
+            avg = stats["avg_spend"]
             print(
-                f"  {segment:18} {stats['count']:3} customers  |  ${stats['total_revenue']:8,.2f} total  |  ${stats['avg_spend']:6,.2f} avg"
+                f"  {segment:18} {stats['count']:3} customers  |  "
+                f"${revenue:8,.2f} total  |  ${avg:6,.2f} avg"
             )
 
     # Print top 10 customers by LTV
@@ -273,8 +274,8 @@ if __name__ == "__main__":
         print("-" * 60)
 
         for customer in at_risk[:10]:  # Show top 10 at-risk by spend
-            print(
-                f"{customer['name']:<15} {customer['phone']:<15} {customer['days_since_last_visit']:<18} ${customer['total_spend']:,.2f}"
-            )
+            days = customer["days_since_last_visit"]
+            spend = customer["total_spend"]
+            print(f"{customer['name']:<15} {customer['phone']:<15} " f"{days:<18} ${spend:,.2f}")
 
     print("\n" + "=" * 60)
