@@ -1,3 +1,5 @@
+"""Application routes and view functions."""
+
 from datetime import datetime, timedelta
 
 from flask import flash, redirect, render_template, request
@@ -7,6 +9,12 @@ from backend.customer_analytics import calculate_customer_ltv, get_segment_summa
 
 # Import from backend package
 from backend.models import Appointment, Customer, Service, Technician, app, db
+from backend.staff_analytics import (
+    get_customer_retention_by_technician,
+    get_staff_summary_stats,
+    get_technician_performance,
+    get_top_services_by_technician,
+)
 
 
 # --- ROUTE 1: THE DASHBOARD ---
@@ -187,3 +195,50 @@ def add_appointment():
     technicians = Technician.query.all()
     services = Service.query.all()
     return render_template("add.html", technicians=technicians, services=services)
+
+
+# --- ROUTE 5: STAFF PERFORMANCE DASHBOARD ---
+@app.route("/staff-performance")
+def staff_performance():
+    """Display comprehensive staff performance analytics."""
+    # Get date range from query params (default to last 30 days)
+    days = int(request.args.get("days", 30))
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days)
+
+    # Get all performance data
+    performance_data = get_technician_performance(start_date, end_date)
+    retention_data = get_customer_retention_by_technician(start_date, end_date)
+    summary_stats = get_staff_summary_stats(start_date, end_date)
+
+    # Prepare chart data for revenue comparison
+    tech_names = [tech["name"] for tech in performance_data]
+    tech_revenues = [tech["total_revenue"] for tech in performance_data]
+    tech_appointments = [tech["appointment_count"] for tech in performance_data]
+    tech_tips = [tech["total_tips"] for tech in performance_data]
+
+    # Merge retention data with performance data
+    retention_dict = {r["technician_id"]: r["retention_rate"] for r in retention_data}
+    for tech in performance_data:
+        tech["retention_rate"] = retention_dict.get(tech["id"], 0)
+
+    # Get top services for top performer (if exists)
+    top_services = []
+    if performance_data:
+        top_tech_id = performance_data[0]["id"]
+        top_services = get_top_services_by_technician(top_tech_id, limit=5)
+
+    return render_template(
+        "staff_performance.html",
+        performance_data=performance_data,
+        retention_data=retention_data,
+        summary_stats=summary_stats,
+        tech_names=tech_names,
+        tech_revenues=tech_revenues,
+        tech_appointments=tech_appointments,
+        tech_tips=tech_tips,
+        top_services=top_services,
+        selected_days=days,
+        start_date=start_date.strftime("%Y-%m-%d"),
+        end_date=end_date.strftime("%Y-%m-%d"),
+    )

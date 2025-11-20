@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row mb-4">
+  <div class="col-12">
+    <h1 class="display-5 fw-bold">👥 Staff Performance Dashboard</h1>
+    <p class="text-muted">Comprehensive performance analytics for your team</p>
+
+    <!-- Date Range Filter -->
+    <div class="btn-group mb-3" role="group">
+      <a href="/staff-performance?days=7" class="btn btn-sm {% if selected_days == 7 %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Last 7 Days
+      </a>
+      <a href="/staff-performance?days=30" class="btn btn-sm {% if selected_days == 30 %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Last 30 Days
+      </a>
+      <a href="/staff-performance?days=90" class="btn btn-sm {% if selected_days == 90 %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Last 90 Days
+      </a>
+    </div>
+    <span class="text-muted ms-3">
+      <small>📅 {{ start_date }} to {{ end_date }}</small>
+    </span>
+  </div>
+</div>
+
+<!-- Summary Stats Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary">
+      <div class="card-body">
+        <h6 class="card-title">Total Technicians</h6>
+        <h2 class="mb-0">{{ summary_stats.total_technicians }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success">
+      <div class="card-body">
+        <h6 class="card-title">Total Revenue</h6>
+        <h2 class="mb-0">${{ "%.2f"|format(summary_stats.total_revenue) }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-info">
+      <div class="card-body">
+        <h6 class="card-title">Total Appointments</h6>
+        <h2 class="mb-0">{{ summary_stats.total_appointments }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-warning">
+      <div class="card-body">
+        <h6 class="card-title">Avg per Tech</h6>
+        <h2 class="mb-0">${{ "%.2f"|format(summary_stats.avg_revenue_per_tech) }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+  <!-- Revenue Comparison Chart -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">📊 Revenue by Technician</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="revenueChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointments Chart -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">📅 Appointments Count</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="appointmentsChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Performance Table -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">🏆 Detailed Performance Metrics</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Rank</th>
+                <th>Technician</th>
+                <th>Appointments</th>
+                <th>Revenue</th>
+                <th>Tips</th>
+                <th>Commission</th>
+                <th>Avg Service</th>
+                <th>Unique Customers</th>
+                <th>Retention Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tech in performance_data %}
+              <tr>
+                <td>
+                  {% if tech.rank == 1 %}
+                    <span class="badge bg-warning">🥇 {{ tech.rank }}</span>
+                  {% elif tech.rank == 2 %}
+                    <span class="badge bg-secondary">🥈 {{ tech.rank }}</span>
+                  {% elif tech.rank == 3 %}
+                    <span class="badge bg-info">🥉 {{ tech.rank }}</span>
+                  {% else %}
+                    <span class="badge bg-light text-dark">{{ tech.rank }}</span>
+                  {% endif %}
+                </td>
+                <td><strong>{{ tech.name }}</strong></td>
+                <td>{{ tech.appointment_count }}</td>
+                <td>${{ "%.2f"|format(tech.total_revenue) }}</td>
+                <td>${{ "%.2f"|format(tech.total_tips) }}</td>
+                <td>${{ "%.2f"|format(tech.commission_earned) }}</td>
+                <td>${{ "%.2f"|format(tech.avg_service_price) }}</td>
+                <td>{{ tech.unique_customers }}</td>
+                <td>
+                  {% if tech.retention_rate >= 70 %}
+                    <span class="badge bg-success">{{ tech.retention_rate }}%</span>
+                  {% elif tech.retention_rate >= 50 %}
+                    <span class="badge bg-warning">{{ tech.retention_rate }}%</span>
+                  {% else %}
+                    <span class="badge bg-danger">{{ tech.retention_rate }}%</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tips Performance Chart -->
+<div class="row mb-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">💰 Tips Comparison</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="tipsChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Services for Best Performer -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">⭐ Top Services (Best Performer)</h5>
+      </div>
+      <div class="card-body">
+        {% if top_services %}
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Count</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for service in top_services %}
+              <tr>
+                <td>{{ service.service_name }}</td>
+                <td>{{ service.count }}</td>
+                <td>${{ "%.2f"|format(service.revenue) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="text-muted">No data available</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Retention by Tech -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">💎 Customer Retention Analysis</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="retentionChart" height="80"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  // Revenue Comparison Chart
+  const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+  new Chart(revenueCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ tech_names | tojson }},
+      datasets: [{
+        label: 'Revenue ($)',
+        data: {{ tech_revenues | tojson }},
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toFixed(0);
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Appointments Doughnut Chart
+  const appointmentsCtx = document.getElementById('appointmentsChart').getContext('2d');
+  new Chart(appointmentsCtx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ tech_names | tojson }},
+      datasets: [{
+        data: {{ tech_appointments | tojson }},
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 159, 64, 0.7)'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+
+  // Tips Comparison Chart
+  const tipsCtx = document.getElementById('tipsChart').getContext('2d');
+  new Chart(tipsCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ tech_names | tojson }},
+      datasets: [{
+        label: 'Tips ($)',
+        data: {{ tech_tips | tojson }},
+        backgroundColor: 'rgba(255, 206, 86, 0.7)',
+        borderColor: 'rgba(255, 206, 86, 1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toFixed(0);
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Retention Rate Chart
+  const retentionCtx = document.getElementById('retentionChart').getContext('2d');
+  new Chart(retentionCtx, {
+    type: 'line',
+    data: {
+      labels: {{ tech_names | tojson }},
+      datasets: [{
+        label: 'Retention Rate (%)',
+        data: [{% for tech in performance_data %}{{ tech.retention_rate }}{% if not loop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            callback: function(value) {
+              return value + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}
